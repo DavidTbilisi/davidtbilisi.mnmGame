@@ -1,0 +1,51 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  font-size: 20px;
+}
+
+.img-items {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  .img-item {
+    border: 1px solid;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.one, .answer {
+  text-align: center;
+}
+.answer{
+    img{
+      width:100%;
+    }
+}
+.one {
+  margin-top: 2rem;
+  font-size: 2rem;
+
+}
+
+.buttons {
+  position: fixed;
+  bottom: 2rem;
+  margin: 0 50%;
+  transform: translate(-53%);
+  width: 100%;
+
+  text-align: center;
+  button {
+    font-size: 1rem;
+    padding: 0.5rem;
+    margin: 0;
+  }
+}
