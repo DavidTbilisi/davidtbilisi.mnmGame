@@ -6,7 +6,9 @@
 :root {
   font-size: 20px;
 }
-
+html,body,button{
+  font-size: 2rem;
+}
 .img-items {
   display: flex;
   flex-direction: row;
@@ -24,16 +26,51 @@
 .one, .answer {
   text-align: center;
 }
-.answer{
-    img{
-      width:100%;
-    }
-}
-.one {
-  margin-top: 2rem;
-  font-size: 2rem;
 
+.answer {
+  img {
+    width: 40%;
+  }
 }
+
+.one {
+  margin-top: 0.5rem;
+  font-size: 2rem;
+}
+
+.test {
+  --size:100px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  button {
+    padding: 1.2rem;
+  }
+  img{
+    width:  var(--size);
+    height: var(--size);
+  }
+
+  .good{
+    position: relative;
+    &:after{
+      position: absolute;
+      top:0;
+      right: 0;
+      content: '\2713';
+      display: block;
+      width:  var(--size);
+      height: var(--size);
+      color: #00ffaf;
+      text-shadow: 0 0 1px black;
+
+    }
+  }
+}
+
+
+
+
 
 .buttons {
   position: fixed;
