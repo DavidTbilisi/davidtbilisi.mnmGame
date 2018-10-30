@@ -29,19 +29,17 @@
 
     <!--ღილაკები-->
     <div class="buttons">
-        <button @click="show = show==true?false:true">
-            <p v-if='show'> hide all </p>
-            <p v-else> show all </p>
-        </button>
-
-        <button @click="answer = answer==true?false:true">
-            <p v-if='answer'> hide answer </p>
-            <p v-else> show answer </p>
-        </button>
+        <btn >
+            <template slot="if_true">hide answer</template>
+            <template slot="if_else">show answer</template>
+        </btn>
+        <btn>
+            <template slot="if_true">hide answer</template>
+            <template slot="if_else">show answer</template>
+        </btn>
 
         <button @click="next();">next</button>
     </div>
-
 
     <!--ყველა სურათი-->
     <div class="img-items" v-if="show">

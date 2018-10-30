@@ -3,19 +3,15 @@
  */
 import '../css/main.scss';
 import {Array} from './Array';
+import {sharedData} from './data';
+import './comp.btn';
+import './comp.message';
+window.Events = new Vue();
 
 
 global.vm = new Vue({
     el: "#vuejs",
-    data: {
-        arr: new Array(),
-        show: false,
-        answer: false,
-        one: new Array().rand(10, 99),
-        tests: [],
-        weakNums: [],
-        rightClass: {good: false}
-    },
+    data: sharedData,
     computed: {
         number: function () {
             "use strict";
@@ -72,7 +68,24 @@ global.vm = new Vue({
             } else {
                 this.weakNums.push(this.one);
             }
+        },
+        toggleValue(val) {
+            "use strict";
+            val = val === true ? false : true;
         }
+    },
+    created: function () {
+
+        Events.$on('toggleValue', (fromEmit) => {
+            switch (fromEmit) {
+                case "answer":
+                    this.answer = this.answer == true ? false : true;
+                    break;
+                case 'show':
+                    this.show = this.show == true ? false : true;
+            }
+        });
     }
 
 });
+
