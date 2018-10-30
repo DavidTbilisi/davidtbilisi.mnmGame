@@ -5,18 +5,20 @@
                 <div class="col-sm-4">
                     <span>min: </span>
                     <input v-model="min"
+                           @change="learn()"
                             type="number"
                             min="0"
                             :max="parseInt(max)-2">
                 </div>
                 <div class="col-sm-4">
-                    <h3 class="random-number"> {{ rand }}
+                    <h3 class="random-number" @click="toggleTitle"> {{ rand }}
                         <span v-show="title"> {{ images[ parseInt(rand) ].slice(4) }} </span>
                     </h3>
                 </div>
                 <div class="col-sm-4">
                     <span>max: </span>
                     <input v-model="max"
+                           @change="learn()"
                            type="number"
                            :min="parseInt(min)+1"
                            max="999">
@@ -54,7 +56,7 @@
             <div class="row">
                 <div class="col" v-show="learnShow">
                     <hr>
-                    <div v-for="l in learn" class="one-item">
+                    <div v-for="l in learnArr" class="one-item">
                         <img :src="imgSrc(parseInt(l))"
                              :alt="images[parseInt(l)]"
                              :title="images[parseInt(l)]">
@@ -84,7 +86,7 @@
     import {names} from "./names";
     import {Array} from "./Array";
     import 'bootstrap/dist/css/bootstrap-grid.min.css';
-    const a = new Array();
+    global.a = new Array();
     export default {
         name: 'app',
         data () {
@@ -95,9 +97,9 @@
                 imgN: 1,
                 rand: 0,
                 randArr: [],
-                min: 0,
-                max: 10,
-//                learn: [],
+                min: localStorage.min?localStorage.min:0,
+                max: localStorage.max?localStorage.max:10,
+                learnArr: [],
                 learnShow: false,
                 showCorrect: false,
             }
@@ -113,7 +115,7 @@
                 if (!NaN) {
                     return require(`./assets/images/${number}.jpg`);
                 } else {
-                    console.warn(number);
+                    console.warn(`you should pass number but you passed ${number}`);
                 }
             },
             addZeros(num) {
@@ -123,7 +125,6 @@
             toggleTitle(){
                 this.title = this.title ? false : true;
             },
-
             toggleImage(){
                 this.imgVisible = this.imgVisible ? false : true;
 
@@ -143,21 +144,40 @@
                 }
             },
             genRandom(){
-                let withoutZeros = a.rand(this.min, this.max);
+                let withoutZeros = a.rand(parseInt(this.min), parseInt(this.max));
                 return this.addZeros(withoutZeros);
             },
             getRandArr(to) {
                 let arr = [];
                 let arr2 = [];
-                a.loop({to: to}, () => {
-                    let one = a.rand(this.min, this.max);
-                    arr.push(one)
+                a.loop({to: to}, (i) => {
+                    let one = a.rand(parseInt(this.min), parseInt(this.max));
+                    arr.push(one);
                 });
-                arr.forEach((thisOne) => {
+
+                arr.forEach((thisOne, index) => {
                     arr2.push(this.addZeros(thisOne));
                 });
-                arr2[a.rand(0, to)] = this.rand;
+
+                arr2[a.rand(this.min, this.max)] = this.rand;
+
                 return arr2;
+            },
+
+
+            learn: function () {
+                let min = parseInt(this.min);
+                let max = parseInt(this.max);
+                let l = localStorage;
+                l.min = min;
+                l.max = max;
+                let ar =[];
+                if (min < max) {
+                    for (let i = min; i < max; i++) {
+                        ar.push(i);
+                    }
+                }
+                this.learnArr = ar;
             },
             next(){
                 this.rand = this.genRandom();
@@ -167,15 +187,8 @@
 
         mounted() {
             this.next();
+            this.learn();
         },
-
-        computed: {
-            learn: function () {
-                let min = this.min;
-                let max = this.max;
-                return a.range({from: min, to: max})
-            }
-        }
     }
 
 </script>
@@ -200,6 +213,7 @@
     .top {
         input {
             font-size: 5rem;
+            width:calc(100% / 3)
         }
     }
 
