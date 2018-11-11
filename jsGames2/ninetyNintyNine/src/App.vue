@@ -6,13 +6,13 @@
                     <span>min: </span>
                     <input v-model="min"
                            @change="learn()"
-                            type="number"
-                            min="0"
-                            :max="parseInt(max)-2">
+                           type="number"
+                           min="0"
+                           :max="parseInt(max)-2">
                 </div>
                 <div class="col-sm-4">
-                    <h3 class="random-number" @click="toggleTitle"> {{ rand }}
-                        <span v-show="title"> {{ images[ parseInt(rand) ].slice(4) }} </span>
+                    <h3 class="random-number" @click="toggleTitle"> {{ rand}}
+                        <span v-show="title"> {{ images[parseInt(rand)].slice(4) }} </span>
                     </h3>
                 </div>
                 <div class="col-sm-4">
@@ -31,7 +31,7 @@
                 <div class="col">
                     <img v-show="imgVisible"
                          @click="toggleTitle"
-                         :src="imgSrc(images[parseInt(rand)])"
+                         :src="imgSrc( parseInt(rand) )"
                          :alt="images[parseInt(rand)]"
                          :title="images[parseInt(rand)]">
                 </div>
@@ -42,10 +42,10 @@
             <div class="row">
                 <div class="col">
                     <span v-for="r in randArr"
-                          :class="{correct:rand==r&&showCorrect}"
-                          >
+                          :class="{correct:rand==r&&showCorrect, err:rand!=r&&showErr}"
+                    >
                     <img @click="testCorrect"
-                         :src="imgSrc(parseInt(r) )"
+                         :src="imgSrc( parseInt(r) )"
                          :alt="images[parseInt(r)]"
                          :title="images[parseInt(r)]">
                         </span>
@@ -57,7 +57,7 @@
                 <div class="col" v-show="learnShow">
                     <hr>
                     <div v-for="l in learnArr" class="one-item">
-                        <img :src="imgSrc(parseInt(l))"
+                        <img :src="imgSrc( parseInt(l) )"
                              :alt="images[parseInt(l)]"
                              :title="images[parseInt(l)]">
                         <p> {{ images[parseInt(l)] }} </p>
@@ -67,6 +67,11 @@
         </div>
 
         <div class="bottom">
+            <div class="row">
+                <div class="col" @click="toggleSound">
+                    <div class="sound">sound {{sound}}</div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-4">
                     <button @click="toggleImage()">img</button>
@@ -87,6 +92,8 @@
     import {Array} from "./Array";
     import 'bootstrap/dist/css/bootstrap-grid.min.css';
     global.a = new Array();
+    const win = new Audio();
+    win.src = require('./assets/win.mp3');
     export default {
         name: 'app',
         data () {
@@ -96,12 +103,14 @@
                 images: names,
                 imgN: 1,
                 rand: 0,
+                sound: true,
                 randArr: [],
-                min: localStorage.min?localStorage.min:0,
-                max: localStorage.max?localStorage.max:10,
+                min: localStorage.min ? localStorage.min : 0,
+                max: localStorage.max ? localStorage.max : 10,
                 learnArr: [],
                 learnShow: false,
                 showCorrect: false,
+                showErr: false,
             }
         },
         filters: {
@@ -112,7 +121,7 @@
         methods: {
             imgSrc(num){
                 let number = this.addZeros(num);
-                if (!NaN) {
+                if (!isNaN(number)) {
                     return require(`./assets/images/${number}.jpg`);
                 } else {
                     console.warn(`you should pass number but you passed ${number}`);
@@ -132,15 +141,22 @@
             toggleLearn(){
                 this.learnShow = this.learnShow ? false : true;
             },
+            toggleSound(){
+                this.sound = this.sound ? false : true;
+            },
             testCorrect(e){
-                if( e.target.src.match(this.rand) ){
+                if (e.target.src.match(this.rand)) {
                     this.showCorrect = true;
-                    setTimeout(() =>{
+
+                    this.sound ? win.play() : '';
+
+                    setTimeout(() => {
                         this.showCorrect = false;
+                        this.showErr = false;
                         this.next()
                     }, 5e2);
                 } else {
-                    console.log('note')
+                    this.showErr = true;
                 }
             },
             genRandom(){
@@ -159,7 +175,7 @@
                     arr2.push(this.addZeros(thisOne));
                 });
 
-                arr2[a.rand(this.min, this.max)] = this.rand;
+                arr2[a.rand(0, to)] = this.rand;
 
                 return arr2;
             },
@@ -171,7 +187,7 @@
                 let l = localStorage;
                 l.min = min;
                 l.max = max;
-                let ar =[];
+                let ar = [];
                 if (min < max) {
                     for (let i = min; i < max; i++) {
                         ar.push(i);
@@ -202,6 +218,11 @@
         font-size: 10rem;
     }
 
+    html, body {
+        width: 100%;
+        height: 100%;
+    }
+
     #app {
         text-align: center;
     }
@@ -213,7 +234,7 @@
     .top {
         input {
             font-size: 5rem;
-            width:calc(100% / 3)
+            width: calc(100% / 3)
         }
     }
 
@@ -227,23 +248,38 @@
         img {
             width: 20rem;
         }
-        span{
-            display:inline-block;
+        span {
+            display: inline-block;
         }
-        .correct{
+        .correct {
             position: relative;
-
-            &:after{
+            &:after {
                 position: absolute;
-                top:0;
+                top: -42px;
                 right: 0;
                 content: '\2713';
                 display: block;
-                --size:100%;
-                width:  var(--size);
+                --size: 100%;
+                width: var(--size);
                 height: var(--size);
                 color: #00ffaf;
-                font-size:20rem;
+                font-size: 20rem;
+                /*background: #ff000061;*/
+            }
+        }
+        .err{
+            position: relative;
+            &:after {
+                position: absolute;
+                top:-42px;
+                right: 0;
+                content: '\2612';
+                display: block;
+                --size: 100%;
+                width: var(--size);
+                height: var(--size);
+                color: rgba(255, 72, 80, 0.7);
+                font-size: 20rem;
                 /*background: #ff000061;*/
             }
         }
@@ -258,6 +294,11 @@
     }
 
     .bottom {
+        .sound {
+            &:hover {
+                backgorund: rgba(123, 123, 123, 0.5)
+            }
+        }
         position: fixed;
         bottom: 2rem;
         right: 50%;
